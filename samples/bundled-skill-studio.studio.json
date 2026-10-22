@@ -1,0 +1,254 @@
+{
+  "version": 1,
+  "blueprint": {
+    "version": 1,
+    "name": "skill-studio",
+    "title": "技能工坊使用指南",
+    "description": "Use when 用户要做一个 skill、制作技能、新建 skill，或要校验 skill、测试 skill、发布 skill、回滚 skill；也用于排查 skill 触发不准、结果无法复现、灰度退化。用技能工坊的 6 个工具把流程固化成可复用技能，验收口径是触发准确、执行可复现。",
+    "whenToUse": "用户说“做一个 skill / 制作技能 / 把这段流程固化成技能 / 校验、测试、发布、回滚 skill”，或需要排查 skill 触发不准、结果不可复现时。普通代码重构、安装插件、纯知识问答不要使用本技能。",
+    "problem": "把一段可复用流程固化成能被 agent 正确路由、执行结果可复现、可以灰度上线的 skill，并提供校验、测试、发布、回滚的固定流水线。",
+    "outOfScope": "普通代码重构、纯知识问答、安装第三方插件、修改 DSH 核心代码；这些场景不要新建 skill。",
+    "triggers": {
+      "include": [
+        "做一个 skill",
+        "制作技能",
+        "新建 skill",
+        "校验 skill",
+        "测试 skill",
+        "发布 skill",
+        "灰度",
+        "触发不准",
+        "无法复现"
+      ],
+      "exclude": [
+        "普通代码重构",
+        "安装插件",
+        "写周报"
+      ]
+    },
+    "inputs": [
+      {
+        "name": "需求描述或技能名",
+        "description": "要固化的流程、目标用户说法、或要改造的现有 skill 名",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "name": "能力边界信息",
+        "description": "问题、触发/不触发、输入输出、权限、步骤、错误码；不全时按规范补问",
+        "required": false,
+        "type": "string"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "SKILL.md",
+        "description": "frontmatter + 标准章节的技能定义",
+        "type": "file"
+      },
+      {
+        "name": "tests/skill.test.json",
+        "description": "触发与命令测试规格",
+        "type": "file"
+      },
+      {
+        "name": "校验 / 测试 / 发布报告",
+        "description": "带错误码与准确率指标的结果",
+        "type": "object"
+      }
+    ],
+    "permissions": {
+      "filesystem": "write",
+      "network": false,
+      "shell": true,
+      "env": []
+    },
+    "overlaps": [
+      {
+        "skill": "reverse-engineer-anything",
+        "note": "REA 面向二进制/运行时逆向；本技能只做技能制作，不分析二进制"
+      },
+      {
+        "skill": "pattern-design-atlas",
+        "note": "花型设计知识库；与本技能无重叠"
+      }
+    ],
+    "steps": [
+      {
+        "title": "看现状",
+        "detail": "调用 skill_studio_list，确认技能仓库、暂存区、灰度状态，检查是否已有同名或职责重叠的技能。",
+        "command": "skill_studio_list"
+      },
+      {
+        "title": "定能力边界",
+        "detail": "按五问补齐蓝图：解决什么问题、何时触发/不触发、输入输出、权限边界、与现有 skill 的分工；保持单一职责。",
+        "command": ""
+      },
+      {
+        "title": "生成草稿",
+        "detail": "调用 skill_studio_scaffold 生成 SKILL.md、脚本模板、参考资料与测试规格到暂存区。",
+        "command": "skill_studio_scaffold"
+      },
+      {
+        "title": "校验",
+        "detail": "调用 skill_studio_validate；error 必须清零，warning 逐条确认（尤其是触发词缺失、职责重叠）。",
+        "command": "skill_studio_validate"
+      },
+      {
+        "title": "测试",
+        "detail": "调用 skill_studio_test；触发正例/负例达标，命令用例覆盖正常/异常/边界，二次运行结果一致。",
+        "command": "skill_studio_test"
+      },
+      {
+        "title": "灰度发布",
+        "detail": "调用 skill_studio_publish channel=canary 发布到当前工作区；用 skill_studio_status refresh_canary=true 观察健康度，退化则 rollback。",
+        "command": "skill_studio_publish"
+      },
+      {
+        "title": "提升上线",
+        "detail": "灰度健康后调用 skill_studio_publish channel=promote 提升到用户技能根；记录版本、摘要与准确率，按日志继续迭代。",
+        "command": "skill_studio_publish"
+      }
+    ],
+    "errorCodes": [
+      {
+        "code": "VALIDATION_FAILED",
+        "meaning": "SKILL.md 或资源不满足上线契约",
+        "handling": "按返回的错误码逐条修复，重跑 validate"
+      },
+      {
+        "code": "TEST_FAILED",
+        "meaning": "触发准确率或执行复现未达标",
+        "handling": "按失败用例修 description 或脚本，重跑 test"
+      },
+      {
+        "code": "CANARY_REQUIRED",
+        "meaning": "未灰度直接发布稳定通道",
+        "handling": "先发 canary 并确认健康，或显式 force"
+      },
+      {
+        "code": "CANARY_UNHEALTHY",
+        "meaning": "灰度退化或已回滚",
+        "handling": "修复后重新灰度；必要时 rollback 到备份"
+      },
+      {
+        "code": "STAGING_EXISTS",
+        "meaning": "暂存区已有同名草稿",
+        "handling": "传 overwrite=true 覆盖或更换技能名"
+      },
+      {
+        "code": "PUBLISH_NO_PROJECT",
+        "meaning": "灰度发布时不知道当前工作区",
+        "handling": "先在会话里调用工具，或在插件页设置工作区目录"
+      }
+    ],
+    "timeoutMs": 60000,
+    "resources": {
+      "scripts": [
+        "check-skill.mjs"
+      ],
+      "references": [
+        "authoring-standard.md"
+      ]
+    },
+    "tests": {
+      "trigger": {
+        "minAccuracy": 0.8,
+        "cases": [
+          {
+            "prompt": "帮我做一个制作 skill 的插件，先定能力边界再写 SKILL.md",
+            "expect": "skill-studio",
+            "note": "正例：制作 skill"
+          },
+          {
+            "prompt": "把这个周报流程固化成技能，顺便做触发测试",
+            "expect": "skill-studio",
+            "note": "正例：固化成技能"
+          },
+          {
+            "prompt": "校验一下这个 skill 能不能上线，再看看灰度健康度",
+            "expect": "skill-studio",
+            "note": "正例：校验/灰度"
+          },
+          {
+            "prompt": "我做的 skill 触发总是不准，而且结果无法复现，怎么排查",
+            "expect": "skill-studio",
+            "note": "正例：排查触发/复现"
+          },
+          {
+            "prompt": "今天天气怎么样，适合出去跑步吗",
+            "expect": null,
+            "note": "负例：无关闲聊"
+          },
+          {
+            "prompt": "帮我重构这段 Python 代码，把循环改成向量化",
+            "expect": null,
+            "note": "负例：普通代码重构"
+          },
+          {
+            "prompt": "安装一个 npm 插件并重启开发服务器",
+            "expect": null,
+            "note": "负例：安装插件"
+          },
+          {
+            "prompt": "给这篇文章写一段 200 字的摘要",
+            "expect": null,
+            "note": "负例：写作任务"
+          }
+        ]
+      },
+      "commands": [
+        {
+          "name": "normal",
+          "argv": [
+            "node",
+            "scripts/check-skill.mjs",
+            "SKILL.md",
+            "--json"
+          ],
+          "timeoutMs": 30000,
+          "expect": {
+            "exitCode": 0,
+            "stdoutContains": "\"ok\": true"
+          },
+          "reproducible": true
+        },
+        {
+          "name": "error-missing-file",
+          "argv": [
+            "node",
+            "scripts/check-skill.mjs",
+            "missing.md",
+            "--json"
+          ],
+          "timeoutMs": 30000,
+          "expect": {
+            "exitCode": 2,
+            "stdoutContains": "\"code\": \"E_NO_FILE\""
+          },
+          "reproducible": true
+        },
+        {
+          "name": "boundary-description-too-short",
+          "argv": [
+            "node",
+            "scripts/check-skill.mjs",
+            "SKILL.md",
+            "--json",
+            "--min-description",
+            "10000"
+          ],
+          "timeoutMs": 30000,
+          "expect": {
+            "exitCode": 1,
+            "stdoutContains": "\"code\": \"E_DESCRIPTION\""
+          },
+          "reproducible": true
+        }
+      ]
+    },
+    "scriptName": "skill-studio.mjs",
+    "createdAt": "2026-10-21T05:46:34.301Z"
+  },
+  "generatedAt": "2026-10-21T05:46:34.303Z"
+}

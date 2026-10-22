@@ -1,0 +1,40 @@
+{
+  "name": "skill-forge",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Local-first guided desktop app that turns source material into an installable agent skill package.",
+  "license": "MIT",
+  "author": "CYQ131515",
+  "homepage": "https://github.com/CYQ131515/skill-forge#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CYQ131515/skill-forge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CYQ131515/skill-forge/issues"
+  },
+  "keywords": [
+    "agent",
+    "skill",
+    "skill-creator",
+    "macos",
+    "desktop",
+    "swift",
+    "webkit",
+    "nodejs",
+    "local-first"
+  ],
+  "bin": {
+    "skill-forge": "./server.mjs"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "test": "node --test test/*.test.js",
+    "build:desktop": "bash desktop/build.sh",
+    "desktop": "bash desktop/build.sh && open \"../技能锻造台.app\""
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

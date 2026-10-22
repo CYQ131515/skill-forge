@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>技能锻造台 · Skill Forge</title>
+<link rel="icon" href="/favicon.png" type="image/png" sizes="64x64">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="backdrop" aria-hidden="true">
+  <div class="backdrop-grid"></div>
+  <div class="backdrop-glow glow-a"></div>
+  <div class="backdrop-glow glow-b"></div>
+  <div class="backdrop-glow glow-c"></div>
+  <div class="backdrop-scan"></div>
+</div>
+
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2l1.7 5.5L19 9.2l-5.3 1.7L12 16.4l-1.7-5.5L5 9.2l5.3-1.7L12 2z" fill="currentColor"/><path d="M19 15l.9 2.6L22.5 18.5l-2.6.9L19 22l-.9-2.6L15.5 18.5l2.6-.9L19 15z" fill="currentColor" opacity=".6"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5l5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 6l-5 6 5 6m8-12l5 6-5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3l9 17H3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 9v5m0 2.6v.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 19h16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M15 9V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7a2 2 0 002 2h3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m-8 0l1 13h8l1-13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 9l3 3-3 3m6 0h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 7.8-8 9-4.5-1.2-8-4-8-9V6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.8 12.2l2.2 2.2 4.4-4.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m0 0l-6-6m6 6l-6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5m0 0l6-6m-6 6l6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 10-2.3 5.7M20 4v7h-7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 14v4a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-package" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 018 0v3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+</svg>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><img src="/icon-book.png" alt=""></div>
+      <div class="brand-text">
+        <span class="brand-name">SKILL FORGE</span>
+        <span class="brand-sub">技能锻造台</span>
+      </div>
+    </div>
+    <div class="topbar-progress hidden" id="topbar-progress">
+      <span class="mono" id="topbar-step-label">STEP 1 / 4</span>
+      <div class="mini-progress"><i id="topbar-progress-fill" style="width:25%"></i></div>
+    </div>
+    <div class="topbar-meta">
+      <span class="status-dot" id="engine-dot"></span>
+      <span class="mono meta-text" id="engine-label">ENGINE · 连接中</span>
+      <span class="meta-sep"></span>
+      <span class="mono meta-text" id="version-label">v1.0.0</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost btn-sm hidden" id="btn-home" type="button">重新开始</button>
+      <button class="btn btn-ghost btn-sm" id="btn-example" type="button">载入示例</button>
+      <button class="btn btn-ghost btn-sm" id="btn-import" type="button">导入技能包</button>
+      <button class="btn btn-ghost btn-sm" id="btn-blueprint-json" type="button">导入蓝图</button>
+    </div>
+  </header>
+
+  <main class="shell" id="shell">
+    <!-- ============ 首页 ============ -->
+    <section class="welcome" id="view-welcome">
+      <div class="welcome-hero">
+        <div class="welcome-copy">
+          <div class="kicker mono">GUIDED WORKFLOW <span class="kicker-sep">/</span> SOURCE → SKILL</div>
+          <h1>把资料，<br><span class="hero-grad">一步步锻造成技能包</span></h1>
+          <p class="hero-desc">不用先想清楚所有细节。选一个起点，跟着 4 步引导走：投资料、定边界、生成、导出。每一步完成后再进入下一步。</p>
+          <div class="hero-tags">
+            <span class="tag"><svg><use href="#i-play"/></svg>4 步引导</span>
+            <span class="tag"><svg><use href="#i-shield"/></svg>上线契约校验</span>
+            <span class="tag"><svg><use href="#i-package"/></svg>ZIP 一键导出</span>
+          </div>
+        </div>
+        <div class="welcome-side">
+          <div class="book-hero" aria-hidden="true">
+            <div class="book-aura"></div>
+            <img class="book-img" src="/icon-book.png" alt="">
+            <span class="book-orbit orbit-1"></span>
+            <span class="book-orbit orbit-2"></span>
+          </div>
+          <div class="welcome-stats mono">
+            <span><b>0</b> deps</span>
+            <span><b>4</b> steps</span>
+            <span><b>~2</b> min</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="start-grid" id="start-grid">
+        <button class="start-card is-primary" type="button" data-start="materials">
+          <span class="start-icon"><svg><use href="#i-upload"/></svg></span>
+          <span class="start-copy">
+            <b>从资料开始</b>
+            <span>拖入笔记、脚本、截图，自动起草能力边界。</span>
+          </span>
+          <span class="start-meta mono">推荐</span>
+          <span class="start-go"><svg><use href="#i-arrow"/></svg></span>
+        </button>
+        <button class="start-card" type="button" data-start="blank">
+          <span class="start-icon"><svg><use href="#i-spark"/></svg></span>
+          <span class="start-copy">
+            <b>从空白开始</b>
+            <span>我已经想清楚了，直接填能力边界。</span>
+          </span>
+          <span class="start-meta mono">SKIP SOURCE</span>
+          <span class="start-go"><svg><use href="#i-arrow"/></svg></span>
+        </button>
+        <button class="start-card" type="button" data-start="import">
+          <span class="start-icon"><svg><use href="#i-folder"/></svg></span>
+          <span class="start-copy">
+            <b>导入已有技能包</b>
+            <span>从 SKILL.md / studio.json 还原，继续改造。</span>
+          </span>
+          <span class="start-meta mono">IMPORT</span>
+          <span class="start-go"><svg><use href="#i-arrow"/></svg></span>
+        </button>
+        <button class="start-card" type="button" data-start="example">
+          <span class="start-icon"><svg><use href="#i-package"/></svg></span>
+          <span class="start-copy">
+            <b>看一个完整示例</b>
+            <span>载入内置 skill-studio 蓝图，直接体验流程。</span>
+          </span>
+          <span class="start-meta mono">DEMO</span>
+          <span class="start-go"><svg><use href="#i-arrow"/></svg></span>
+        </button>
+      </div>
+
+      <div class="flow-strip">
+        <div class="flow-item"><span class="mono">01</span><b>投入资料</b><p>拖入文档、脚本、截图</p></div>
+        <div class="flow-item"><span class="mono">02</span><b>能力边界</b><p>自动起草，补齐 12 项</p></div>
+        <div class="flow-item"><span class="mono">03</span><b>锻造生成</b><p>生成并校验技能包</p></div>
+        <div class="flow-item"><span class="mono">04</span><b>导出交付</b><p>下载 ZIP，装进技能根</p></div>
+      </div>
+
+      <div class="resume-bar hidden" id="resume-bar">
+        <div class="resume-copy">
+          <span class="mono">上次编辑</span>
+          <b id="resume-name">—</b>
+          <span class="mono" id="resume-meta"></span>
+        </div>
+        <div class="resume-actions">
+          <button class="btn btn-ghost btn-xs" id="btn-discard" type="button">清空</button>
+          <button class="btn btn-primary btn-xs" id="btn-resume" type="button">继续制作<svg><use href="#i-arrow"/></svg></button>
+        </div>
+      </div>
+
+      <div class="welcome-note">
+        <span class="status-dot tiny"></span> 本地运行 · 零依赖 · 产物可直接放进 <code>~/.agents/skills</code> 或项目 <code>.agents/skills</code>
+      </div>
+    </section>
+
+    <!-- ============ 向导 ============ -->
+    <section class="wizard hidden" id="view-wizard">
+      <aside class="rail" id="wizard-rail" aria-label="制作步骤">
+        <div class="rail-title mono">GUIDED FLOW</div>
+        <button type="button" class="rail-step" data-step-go="1">
+          <span class="rail-num mono">01</span>
+          <span class="rail-copy"><b>投入资料</b><small class="mono">SOURCE</small></span>
+          <span class="rail-dot"></span>
+        </button>
+        <button type="button" class="rail-step" data-step-go="2">
+          <span class="rail-num mono">02</span>
+          <span class="rail-copy"><b>能力边界</b><small class="mono">BOUNDARY</small></span>
+          <span class="rail-dot"></span>
+        </button>
+        <button type="button" class="rail-step" data-step-go="3">
+          <span class="rail-num mono">03</span>
+          <span class="rail-copy"><b>锻造生成</b><small class="mono">GENERATE</small></span>
+          <span class="rail-dot"></span>
+        </button>
+        <button type="button" class="rail-step" data-step-go="4">
+          <span class="rail-num mono">04</span>
+          <span class="rail-copy"><b>导出交付</b><small class="mono">EXPORT</small></span>
+          <span class="rail-dot"></span>
+        </button>
+        <div class="rail-foot">
+          <div class="rail-legend"><span class="status-dot tiny"></span> 本地运行 · 零依赖</div>
+          <div class="rail-legend"><span class="rail-key mono">⌘↵</span> 生成</div>
+          <div class="rail-legend"><span class="rail-key mono">⌘S</span> 导出蓝图</div>
+        </div>
+      </aside>
+
+      <div class="stage" id="stage">
+        <div class="mobile-steps" id="mobile-steps">
+          <button type="button" data-step-go="1"><span class="mono">01</span>资料</button>
+          <button type="button" data-step-go="2"><span class="mono">02</span>边界</button>
+          <button type="button" data-step-go="3"><span class="mono">03</span>生成</button>
+          <button type="button" data-step-go="4"><span class="mono">04</span>导出</button>
+        </div>
+
+        <header class="stage-head">
+          <div class="stage-head-copy">
+            <span class="stage-kicker mono" id="stage-kicker">STEP 01 / 04</span>
+            <h2 id="stage-title">投入资料</h2>
+            <p id="stage-desc">把制作这个 skill 需要的文件拖进来；也可以先跳过，稍后手动填写边界。</p>
+          </div>
+          <div class="stage-head-side">
+            <span class="panel-badge mono" id="stage-badge">0 个文件</span>
+            <button class="btn btn-secondary btn-xs hidden" id="stage-action" type="button"><svg><use href="#i-spark"/></svg><span>从资料自动起草</span></button>
+          </div>
+        </header>
+
+        <div class="stage-body" id="stage-body">
+          <!-- STEP 1 -->
+          <section class="step-screen" data-step-screen="1">
+            <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="拖放资料或点击选择文件">
+              <div class="dropzone-icon"><svg><use href="#i-upload"/></svg></div>
+              <div class="dropzone-copy">
+                <b>拖放资料到这里</b>
+                <span>或者点击选择文件 · md / txt / json / js / py / sh / 图片 · 单个 ≤ 4 MB</span>
+              </div>
+              <span class="btn btn-ghost btn-sm">选择文件</span>
+            </div>
+
+            <div class="materials-bar">
+              <button class="btn btn-secondary" id="btn-draft" type="button" disabled><svg><use href="#i-spark"/></svg>从资料自动起草边界</button>
+              <span class="materials-hint" id="materials-hint">自动分配：脚本 → <code>scripts/</code>，文档 → <code>references/</code>，其他 → <code>assets/</code></span>
+            </div>
+
+            <div class="file-list" id="file-list"></div>
+
+            <details class="paste-box">
+              <summary><span>或者粘贴一段资料</span><small class="mono">PASTE</small></summary>
+              <textarea class="input input-code" id="paste-text" rows="4" placeholder="把需求、规范或流程直接粘贴到这里，会作为 notes.md 加入资料。"></textarea>
+              <div class="paste-actions">
+                <button class="btn btn-ghost btn-xs" id="btn-add-paste" type="button"><svg><use href="#i-plus"/></svg>加入资料</button>
+              </div>
+            </details>
+
+            <div class="step-tips">
+              <div class="tip"><span class="tip-icon"><svg><use href="#i-terminal"/></svg></span><b>脚本</b><span>会保留原内容放进 <code>scripts/</code></span></div>
+              <div class="tip"><span class="tip-icon"><svg><use href="#i-file"/></svg></span><b>文档</b><span>变成 <code>references/</code> 里的参考资料</span></div>
+              <div class="tip"><span class="tip-icon"><svg><use href="#i-lock"/></svg></span><b>隐私</b><span>全部在本机处理，不上传任何文件</span></div>
+            </div>
+          </section>
+
+          <!-- STEP 2 -->
+          <section class="step-screen hidden" data-step-screen="2">
+            <div class="form-grid">
+              <label class="field">
+                <span class="field-label">技能名 <em>kebab-case</em></span>
+                <input class="input mono" id="f-name" data-bind="name" placeholder="skill-name" spellcheck="false" autocomplete="off">
+                <span class="field-hint" id="hint-name">小写字母、数字、连字符；会作为安装目录名。</span>
+              </label>
+              <label class="field">
+                <span class="field-label">显示标题</span>
+                <input class="input" id="f-title" data-bind="title" placeholder="例如：面料花型描稿流水线">
+                <span class="field-hint">SKILL.md 的一级标题，写人话。</span>
+              </label>
+
+              <label class="field field-full">
+                <span class="field-label">一句话描述 <em>description</em><span class="counter" id="desc-counter">0 / 500</span></span>
+                <textarea class="input" id="f-description" data-bind="description" rows="3" maxlength="500" placeholder="这个技能解决什么问题、什么时候必须触发。触发词会被自动补进这段描述。"></textarea>
+                <span class="field-hint" id="hint-desc">catalog 只渲染 name + description；至少 24 字符，触发词必须能在这段话里被看到。</span>
+              </label>
+
+              <label class="field field-full">
+                <span class="field-label">适用场景 <em>whenToUse</em></span>
+                <textarea class="input" id="f-when" data-bind="whenToUse" rows="2" placeholder="用户说……时使用；普通……不要使用。"></textarea>
+              </label>
+
+              <label class="field">
+                <span class="field-label">解决什么问题</span>
+                <textarea class="input" id="f-problem" data-bind="problem" rows="2" placeholder="一句话说清单一职责。"></textarea>
+              </label>
+              <label class="field">
+                <span class="field-label">不解决什么 <em>out of scope</em></span>
+                <textarea class="input" id="f-out" data-bind="outOfScope" rows="2" placeholder="明确交出去的部分，避免和其他 skill 抢活。"></textarea>
+              </label>
+
+              <label class="field">
+                <span class="field-label">触发词 <em>include</em></span>
+                <input class="input" id="f-triggers" data-bind-list="triggers.include" placeholder="做一个 skill、制作技能、新建技能">
+                <span class="field-hint">顿号 / 逗号分隔。会写进 description 与「适用场景」。</span>
+              </label>
+              <label class="field">
+                <span class="field-label">不触发 <em>exclude</em></span>
+                <input class="input" id="f-triggers-exclude" data-bind-list="triggers.exclude" placeholder="普通代码重构、纯知识问答">
+                <span class="field-hint">可选，但强烈建议写；负例会被触发测试使用。</span>
+              </label>
+
+              <div class="field">
+                <span class="field-label">输入 <em>inputs</em></span>
+                <div class="rows" id="rows-inputs"></div>
+                <button class="btn btn-ghost btn-xs row-add" type="button" data-add="inputs"><svg><use href="#i-plus"/></svg>添加输入</button>
+              </div>
+              <div class="field">
+                <span class="field-label">输出 <em>outputs</em></span>
+                <div class="rows" id="rows-outputs"></div>
+                <button class="btn btn-ghost btn-xs row-add" type="button" data-add="outputs"><svg><use href="#i-plus"/></svg>添加输出</button>
+              </div>
+
+              <div class="field field-full">
+                <span class="field-label">权限边界 <em>permissions</em></span>
+                <div class="perm-row">
+                  <div class="segmented" id="seg-filesystem" role="group" aria-label="文件系统权限">
+                    <button type="button" data-value="none">不访问</button>
+                    <button type="button" data-value="read">只读</button>
+                    <button type="button" data-value="write">可写</button>
+                  </div>
+                  <label class="switch"><input type="checkbox" id="f-network"><span class="switch-track"></span><span>网络</span></label>
+                  <label class="switch"><input type="checkbox" id="f-shell"><span class="switch-track"></span><span>Shell</span></label>
+                  <label class="field-inline">
+                    <span>超时</span>
+                    <input class="input mono input-xs" id="f-timeout" type="number" min="1" max="600" step="1" value="45"><span class="mono">s</span>
+                  </label>
+                </div>
+                <input class="input mono input-sm" id="f-env" data-bind-list="permissions.env" placeholder="环境变量名，例如 DEEPSEEK_API_KEY（只登记名字，绝不写值）">
+                <span class="field-hint">密钥只通过环境变量注入；任何看起来像密钥的字面量都会被直接拒绝。</span>
+              </div>
+
+              <div class="field field-full">
+                <span class="field-label">执行步骤 <em>至少 2 步</em></span>
+                <div class="steps" id="rows-steps"></div>
+                <button class="btn btn-ghost btn-xs row-add" type="button" data-add="steps"><svg><use href="#i-plus"/></svg>添加步骤</button>
+              </div>
+
+              <div class="field field-full">
+                <span class="field-label">错误码与处理</span>
+                <div class="errors-list" id="rows-errors"></div>
+                <button class="btn btn-ghost btn-xs row-add" type="button" data-add="errorCodes"><svg><use href="#i-plus"/></svg>添加错误码</button>
+              </div>
+
+              <details class="advanced field-full">
+                <summary><span>高级选项</span><small class="mono">VERSION / SCRIPT / OVERLAPS</small></summary>
+                <div class="advanced-grid">
+                  <label class="field">
+                    <span class="field-label">版本</span>
+                    <input class="input mono" id="f-version" type="number" min="1" value="1">
+                  </label>
+                  <label class="field">
+                    <span class="field-label">脚本入口</span>
+                    <input class="input mono" id="f-script" data-bind="scriptName" placeholder="自动：<name>.mjs">
+                  </label>
+                  <label class="field field-full">
+                    <span class="field-label">与现有 skill 的关系</span>
+                    <input class="input" id="f-overlaps" data-bind-list="overlaps" list="skill-names" placeholder="例如 reverse-engineer-anything、pattern-design-atlas">
+                    <span class="field-hint" id="overlap-hint">加载后显示本机已安装技能。</span>
+                  </label>
+                  <label class="switch field-full"><input type="checkbox" id="f-gen-script" checked><span class="switch-track"></span><span>资料里没有脚本时，生成可复现脚本骨架</span></label>
+                </div>
+                <div class="advanced-actions">
+                  <button class="btn btn-ghost btn-xs" type="button" id="btn-export-json"><svg><use href="#i-download"/></svg>导出蓝图 JSON</button>
+                  <button class="btn btn-ghost btn-xs" type="button" id="btn-reset"><svg><use href="#i-refresh"/></svg>清空重来</button>
+                </div>
+              </details>
+
+              <div class="missing-box field-full hidden" id="missing-box">
+                <b>还差这些才能继续</b>
+                <ul id="missing-list"></ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- STEP 3 -->
+          <section class="step-screen hidden" data-step-screen="3">
+            <div class="generate-hero">
+              <div class="generate-copy">
+                <span class="kicker mono">FORGE</span>
+                <h3>把边界和资料锻造成技能包</h3>
+                <p>生成 SKILL.md、资源文件、测试规格和 studio.json，并跑一遍上线契约校验。</p>
+              </div>
+              <button class="btn btn-primary btn-lg" id="btn-build" type="button"><svg><use href="#i-zap"/></svg><span>锻造技能包</span></button>
+            </div>
+
+            <div class="gen-stats">
+              <div class="stat"><span class="stat-label">文件</span><b class="mono" id="gen-files">—</b></div>
+              <div class="stat"><span class="stat-label">体积</span><b class="mono" id="gen-bytes">—</b></div>
+              <div class="stat"><span class="stat-label">错误</span><b class="mono stat-err" id="gen-errors">—</b></div>
+              <div class="stat"><span class="stat-label">警告</span><b class="mono stat-warn" id="gen-warnings">—</b></div>
+            </div>
+
+            <div class="build-result" id="build-result">
+              <div class="build-result-empty">
+                <span class="build-orb"><svg><use href="#i-spark"/></svg></span>
+                <div>
+                  <b>还没有生成</b>
+                  <p>点上面的「锻造技能包」。右侧会实时显示 SKILL.md 预览，生成后可以查看完整文件树与校验报告。</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="gen-actions">
+              <button class="btn btn-ghost" id="btn-preview" type="button"><svg><use href="#i-eye"/></svg>只校验，不导出</button>
+              <button class="btn btn-ghost hidden" id="btn-fix-back" type="button"><svg><use href="#i-arrow-left"/></svg>返回修改边界</button>
+            </div>
+
+            <div class="gen-log mono" id="gen-log">// 等待生成 …</div>
+          </section>
+
+          <!-- STEP 4 -->
+          <section class="step-screen hidden" data-step-screen="4">
+            <div class="export-empty" id="export-empty">
+              <div class="empty-orb"><svg><use href="#i-package"/></svg></div>
+              <p>还没有生成技能包。回到上一步点「锻造技能包」。</p>
+              <button class="btn btn-ghost" id="btn-back-generate" type="button">返回生成</button>
+            </div>
+
+            <div class="export-result hidden" id="export-result">
+              <div class="export-main">
+                <div class="zip-chip"><svg><use href="#i-package"/></svg></div>
+                <div class="export-copy">
+                  <b id="export-name">skill.zip</b>
+                  <span class="mono" id="export-meta">—</span>
+                  <button class="path mono" id="export-path" type="button" title="点击复制路径">—</button>
+                  <span class="export-hint" id="export-hint"></span>
+                </div>
+              </div>
+              <div class="export-actions">
+                <a class="btn btn-primary" id="btn-download" href="#" download><svg><use href="#i-download"/></svg>下载 ZIP</a>
+                <button class="btn btn-ghost" id="btn-open" type="button"><svg><use href="#i-folder"/></svg>在 Finder 中打开</button>
+              </div>
+            </div>
+
+            <div class="export-next">
+              <div class="export-next-head"><span class="mono">NEXT</span><h3>装进技能根就能用</h3></div>
+              <div class="export-steps">
+                <div class="export-step"><span class="mono">01</span><div><b>解压 ZIP</b><p>得到 <code>&lt;name&gt;/</code> 目录，里面是 SKILL.md、资源和测试规格。</p></div></div>
+                <div class="export-step"><span class="mono">02</span><div><b>放进技能根</b><p>项目灰度：<code>.agents/skills/</code>；全局稳定：<code>~/.agents/skills/</code>。</p></div></div>
+                <div class="export-step"><span class="mono">03</span><div><b>让 agent 路由它</b><p>重启会话或重新加载技能目录，描述里的触发词就会生效。</p></div></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <footer class="stage-nav">
+          <button class="btn btn-ghost" id="btn-back" type="button"><svg><use href="#i-arrow-left"/></svg><span>返回首页</span></button>
+          <div class="nav-center">
+            <div class="nav-progress"><i id="nav-progress-fill" style="width:25%"></i></div>
+            <span class="nav-hint" id="nav-hint">资料可以稍后补，也可以直接跳过</span>
+          </div>
+          <button class="btn btn-primary" id="btn-next" type="button"><span>下一步：能力边界</span><svg><use href="#i-arrow"/></svg></button>
+        </footer>
+      </div>
+
+      <aside class="output" id="output">
+        <header class="output-head">
+          <div class="output-title">
+            <span class="mono">OUTPUT</span>
+            <span class="output-state mono" id="output-state">IDLE</span>
+            <button class="icon-btn drawer-close" id="btn-drawer-close" type="button" title="关闭预览" aria-label="关闭预览"><svg><use href="#i-x"/></svg></button>
+          </div>
+          <div class="tabs" role="tablist">
+            <button class="tab" type="button" data-tab="preview" role="tab" aria-selected="true">预览</button>
+            <button class="tab" type="button" data-tab="source" role="tab" aria-selected="false">源码</button>
+            <button class="tab" type="button" data-tab="files" role="tab" aria-selected="false">文件<span class="tab-count" id="tab-count-files">0</span></button>
+            <button class="tab" type="button" data-tab="check" role="tab" aria-selected="false">校验<span class="tab-count" id="tab-count-check">0</span></button>
+          </div>
+        </header>
+        <div class="output-body" id="output-body">
+          <div class="output-empty">
+            <div class="empty-grid" aria-hidden="true"></div>
+            <div class="empty-orb large"><svg><use href="#i-spark"/></svg></div>
+            <h3>等待下一步</h3>
+            <p>投入资料、填写边界后，这里会实时出现 SKILL.md 预览。</p>
+          </div>
+        </div>
+        <footer class="output-foot">
+          <span class="mono" id="output-summary">NO OUTPUT</span>
+          <div class="output-foot-actions">
+            <button class="icon-btn" id="btn-copy-md" type="button" title="复制当前内容"><svg><use href="#i-copy"/></svg></button>
+            <a class="icon-btn hidden" id="btn-download-icon" href="#" download title="下载 ZIP"><svg><use href="#i-download"/></svg></a>
+          </div>
+        </footer>
+      </aside>
+
+      <button class="preview-fab" id="btn-preview-fab" type="button" title="预览 / 校验" aria-label="预览 / 校验"><svg><use href="#i-eye"/></svg>预览 / 校验</button>
+      <div class="drawer-overlay hidden" id="drawer-overlay"></div>
+    </section>
+  </main>
+
+  <footer class="statusbar">
+    <span class="mono sb-item" id="sb-engine">ENGINE · --</span>
+    <span class="sb-item" id="sb-ready">就绪</span>
+    <span class="sb-spacer"></span>
+    <span class="sb-item mono" id="sb-saved">蓝图自动保存 · 未保存</span>
+    <span class="sb-item mono" id="sb-hint">⌘↵ 生成 · ⌘S 导出蓝图</span>
+  </footer>
+</div>
+
+<div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
+
+<input type="file" id="file-input" multiple hidden>
+<input type="file" id="skill-input" webkitdirectory directory multiple hidden>
+<input type="file" id="json-input" accept="application/json,.json" hidden>
+<datalist id="skill-names"></datalist>
+
+<script src="/app.js" type="module"></script>
+</body>
+</html>
