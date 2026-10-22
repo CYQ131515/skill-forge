@@ -65,7 +65,7 @@ cd skill-forge
 open "../技能锻造台.app"
 ```
 
-`build.sh` 会编译 Swift 壳、打包前端资源，输出 `工具/技能锻造台.app`。应用启动时会在内部拉起一个随机端口的本地 Node 服务，关闭窗口即停止。
+`build.sh` 会编译 Swift 壳、打包前端资源，输出到仓库同级的 `技能锻造台.app`。应用启动时会在内部拉起一个随机端口的本地 Node 服务，关闭窗口即停止。
 
 > 构建脚本会自动选择本机可用的 macOS SDK；如果遇到 SDK / Swift 版本不匹配，可以指定：
 > `SKILL_FORGE_SDK=/path/to/MacOSX.sdk ./desktop/build.sh`
