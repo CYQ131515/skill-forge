@@ -23,19 +23,31 @@ rm -rf "$BUILD"
 mkdir -p "$BUILD"
 
 HOST_ARCH="$(uname -m)"
-case "$HOST_ARCH" in
-  arm64) TARGET="arm64-apple-macos13.0" ;;
-  x86_64) TARGET="x86_64-apple-macos13.0" ;;
-  *) echo "不支持的 CPU 架构：$HOST_ARCH"; exit 1 ;;
-esac
 
-echo "▸ compile SkillForge.swift ($HOST_ARCH)"
-swiftc -swift-version 5 \
-  -sdk "$SDK" \
-  -target "$TARGET" \
-  "$ROOT/desktop/SkillForge.swift" \
-  -o "$BUILD/SkillForge" \
-  -framework Cocoa -framework WebKit -O
+if [ "${SKILL_FORGE_UNIVERSAL:-0}" = "1" ]; then
+  echo "▸ compile SkillForge.swift (universal: arm64 + x86_64)"
+  swiftc -swift-version 5 -sdk "$SDK" -target arm64-apple-macos13.0 \
+    "$ROOT/desktop/SkillForge.swift" -o "$BUILD/SkillForge-arm64" \
+    -framework Cocoa -framework WebKit -O
+  swiftc -swift-version 5 -sdk "$SDK" -target x86_64-apple-macos13.0 \
+    "$ROOT/desktop/SkillForge.swift" -o "$BUILD/SkillForge-x86_64" \
+    -framework Cocoa -framework WebKit -O
+  lipo -create "$BUILD/SkillForge-arm64" "$BUILD/SkillForge-x86_64" -output "$BUILD/SkillForge"
+  lipo -info "$BUILD/SkillForge"
+else
+  case "$HOST_ARCH" in
+    arm64) TARGET="arm64-apple-macos13.0" ;;
+    x86_64) TARGET="x86_64-apple-macos13.0" ;;
+    *) echo "不支持的 CPU 架构：$HOST_ARCH"; exit 1 ;;
+  esac
+  echo "▸ compile SkillForge.swift ($HOST_ARCH)"
+  swiftc -swift-version 5 \
+    -sdk "$SDK" \
+    -target "$TARGET" \
+    "$ROOT/desktop/SkillForge.swift" \
+    -o "$BUILD/SkillForge" \
+    -framework Cocoa -framework WebKit -O
+fi
 
 echo "▸ assemble bundle"
 rm -rf "$APP"

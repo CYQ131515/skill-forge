@@ -52,9 +52,26 @@
 
 ---
 
+## 下载安装包
+
+[![Release](https://img.shields.io/badge/download-macOS%20universal-4fe3ff.svg)](https://github.com/CYQ131515/skill-forge/releases/latest)
+
+- **下载**：[SkillForge-macos-universal.zip](https://github.com/CYQ131515/skill-forge/releases/latest/download/SkillForge-macos-universal.zip)（约 1.3 MB，Apple Silicon + Intel 通用）
+- **校验**：[SHA-256](https://github.com/CYQ131515/skill-forge/releases/latest/download/SkillForge-macos-universal.zip.sha256)
+- **要求**：macOS 13+，以及系统里已安装的 Node.js 20+（应用会调用本机 node 启动本地服务，不内置 Node）
+- **首次打开**：应用是 ad-hoc 签名、未走 Apple 公证。若被 Gatekeeper 拦截，右键点击 App →「打开」，或执行：
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/技能锻造台.app"
+```
+
+> 下载包对应的 commit / 源码见 [Releases](https://github.com/CYQ131515/skill-forge/releases)。
+
 ## 快速开始
 
-### 方式一：桌面端（推荐）
+### 从源码构建桌面端
+
+> 如果你只是使用，直接下载上面的安装包即可；以下步骤面向开发者。
 
 **环境**：macOS 13+、Node.js 20+。构建桌面壳需要 Xcode Command Line Tools（Swift）。
 
@@ -72,7 +89,7 @@ open "../技能锻造台.app"
 
 ![桌面端原生窗口](docs/preview-window.png)
 
-### 方式二：浏览器模式（开发用）
+### 浏览器模式（开发用）
 
 ```bash
 cd skill-forge
