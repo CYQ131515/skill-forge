@@ -59,7 +59,9 @@
 - **下载**：[SkillForge-macos-universal.zip](https://github.com/CYQ131515/skill-forge/releases/latest/download/SkillForge-macos-universal.zip)（约 1.3 MB，Apple Silicon + Intel 通用）
 - **校验**：[SHA-256](https://github.com/CYQ131515/skill-forge/releases/latest/download/SkillForge-macos-universal.zip.sha256)
 - **要求**：macOS 13+，以及系统里已安装的 Node.js 20+（应用会调用本机 node 启动本地服务，不内置 Node）
-- **首次打开**：应用是 ad-hoc 签名、未走 Apple 公证。若被 Gatekeeper 拦截，右键点击 App →「打开」，或执行：
+- **首次打开**：应用是 ad-hoc 签名、未走 Apple 公证。若被 Gatekeeper 拦截：
+  1. 右键点击 App →「打开」；仍不行就到 **系统设置 → 隐私与安全性 → 仍要打开**；
+  2. 或者移除隔离属性：
 
 ```bash
 xattr -dr com.apple.quarantine "/Applications/技能锻造台.app"
